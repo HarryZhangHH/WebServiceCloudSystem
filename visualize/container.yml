@@ -1,0 +1,93 @@
+name: visualize
+version: 1.0.0
+kind: ecu
+
+files:
+- visualize.py
+
+entrypoint:
+  kind: task
+  exec: visualize.py
+
+dependencies:
+- python3
+- python3-yaml
+- python3-numpy
+- python3-pandas
+- python3-sklearn
+- python3-matplotlib
+- python3-seaborn
+
+actions:
+  mutual:
+    command:
+      args:
+      - mutual
+    input:
+    output:
+    - name: output
+      type: string
+  corr:
+    command:
+      args:
+      - corr
+    input:
+    output:
+    - name: output
+      type: string
+  Pclass:
+    command:
+      args:
+      - Pclass
+    input:
+    output:
+    - name: output
+      type: string
+  Bridge:
+    command:
+      args:
+      - Bridge
+    input:
+    output:
+    - name: output
+      type: string
+  Title:
+    command:
+      args:
+      - Title
+    input:
+    output:
+    - name: output
+      type: string
+  age:
+    command:
+      args:
+      - age
+    input:
+    output:
+    - name: output
+      type: string
+  sex:
+    command:
+      args:
+      - sex
+    input:
+    output:
+    - name: output
+      type: string
+  fare:
+    command:
+      args:
+      - fare
+    input:
+    output:
+    - name: output
+      type: string
+  Parch:
+    command:
+      args:
+      - Parch
+    input:
+    output:
+    - name: output
+      type: string
