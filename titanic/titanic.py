@@ -81,15 +81,15 @@ def get_social_staus(train, test):
         encoded_titles.append(i)
 
     def titles_encoder(title):
-    #titles = [' Mr', ' Mrs', ' Miss', ' Master', ' Ms', ' Col', ' Rev', ' Dr', ' Dona', ' Don', ' Mme', ' Major', ' Lady', ' Sir', ' Mlle', ' Capt', ' Countess', ' Jonkheer']
-    #encoded_titles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+        titles = [' Mr', ' Mrs', ' Miss', ' Master', ' Ms', ' Col', ' Rev', ' Dr', ' Dona', ' Don', ' Mme', ' Major', ' Lady', ' Sir', ' Mlle', ' Capt', ' Countess', ' Jonkheer']
+        encoded_titles = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
         title = str(title)
         if title in titles:
             text_index = titles.index(title)
             encoded = encoded_titles[text_index]
             return int(encoded)
     train['TitleEncoded'] = train['Title'].apply(titles_encoder)
-    return train, test
+    return train
     
 def get_familysize(train):
     train['Parch'].replace([0], [1], inplace = True)
@@ -149,7 +149,7 @@ def clean_cabin_number(train):
     # cleaning the CabinNumber
     train['CabinLetter'] = train['Cabin'].apply(letter_cleaner)
     train['CabinNumber'] = train['Cabin'].apply(get_cabin_number)
-    # Normalization de Fare
+    # Normalization the Fare
     train['Fare'] = train['Fare'] / train['Fare'].max()
     return train
 
@@ -172,7 +172,8 @@ def get_bridge(train):
         elif value > 0.04 and value < 0.07:
             text = 'T'
         else:
-            print(value)
+            text = 'G'
+            print(f'Fare is {value}')
         return text
     def passenger_by_bridge(bridge):
         if bridge == 'A':
@@ -208,6 +209,7 @@ def get_bridge(train):
         #print(f'Class {i}:\t\t{cabin["Fare"].mean()}\t:meanFare')
         cabin_class.append(i)
         class_meanings.append(cabin["Fare"].mean())
+    print(train.count())
     train['Bridge'] = train['Fare'].apply(cabin_filler)
     train['PassengerByBridge'] = train['Bridge'].apply(passenger_by_bridge)
     train['PassengerByClass'] = train['Pclass'].apply(passenger_by_class)
@@ -265,8 +267,10 @@ def classify_social_status(train):
             text = 'SmartGuy'
         elif title in [' Miss', ' Mrs', ' Ms', ' Mlle']:
             text = 'RegularMiss'
-        elif title in [' the Countess',' Lady',' Mme', ' Dona']:
+        elif title in [' the Countess',' Lady',' Mme',' Dona']:
             text = 'RichMiss'
+        else:
+            print(title)
         return text
     train['SocialClass'] = train['Title'].apply(class_affilier)
     return train
@@ -286,14 +290,6 @@ def find_correlation(train):
     print(f'Correlation: {corr}')
     indexNames = corr[abs(corr.values) < 0.4].index.values
     indexNames = np.setdiff1d(indexNames, ['Id','MSSubClass'])
-
-def dataset_split(train):
-    y = train['Survived']
-    X = train.drop(['Survived', 'Cabin', 'FamilyName', 'Ticket', 'SibSp',
-                   'FamilySize', 'Parch', 'PassengerByBridge', 'TicketHeader',
-                  'CabinLetter', 'Title', 'Embarked', 'TicketNumber', 'Age'], axis = 1)
-    X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.4, random_state=42)
-    return X_train, X_test, y_train, y_test
 
 def train_model(X_train, y_train):
     numerical_features = make_column_selector(dtype_include = np.number)
@@ -320,6 +316,18 @@ def train_model(X_train, y_train):
     model.fit(X_train, y_train)
     return model
 
+def preprocessing(train):
+    test = pd.read_csv('test.csv')
+    train = get_social_staus(train, test)
+    train = get_familysize(train)
+    train = get_embark_encoded(train)
+    train = clean_ticket_text(train)
+    train = clean_cabin_number(train)
+    train = get_bridge(train)
+    train = fillna_age(train)
+    train = classify_social_status(train)
+    return train
+
 def main():
     start = time.time()
     global args
@@ -329,29 +337,37 @@ def main():
     train = pd.read_csv('train.csv')
     test = pd.read_csv('test.csv')
     print('--- Preprocessing ---')
-    train, test = get_social_staus(train, test)
-    train = get_familysize(train)
-    train = get_embark_encoded(train)
-    train = clean_ticket_text(train)
-    train = clean_cabin_number(train)
-    train = get_bridge(train)
-    train = fillna_age(train)
-    train = classify_social_status(train)
-    train = normalize(train)
-    find_correlation(train)
+    train = preprocessing(train)
+    test = preprocessing(test)
+    train_norm = normalize(train.copy())
+    test_norm = normalize(test.copy())
+    # find_correlation(train)
     # print(train.describe())
     # print(train.head())
 
     print('--- Train/Test split, split ratio:6:4 ---')
-    X_train, X_test, y_train, y_test = dataset_split(train)
+    y = train_norm['Survived']
+    X = train_norm.drop(['Survived', 'Cabin', 'FamilyName', 'Ticket', 'SibSp',
+                   'FamilySize', 'Parch', 'PassengerByBridge', 'TicketHeader',
+                  'CabinLetter', 'Title', 'Embarked', 'TicketNumber', 'Age'], axis = 1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
     print('--- Train ---')
     model = train_model(X_train, y_train)
     print(f'{args.model} -- training score: {model.score(X_train, y_train)}')
     print(f'{args.model} -- test score: {model.score(X_test, y_test)}')
+    # print(model.steps[-1][1].feature_importances_)
     y_pred = model.predict(X_test.copy())
     print(f'Precission_score: {precision_score(y_test,y_pred)}')
     print(f'Recall_score: {recall_score(y_test,y_pred)}')
     print(f'F1-score: {f1_score(y_test,y_pred)}')
+
+    test_x = test_norm.drop(['Cabin', 'FamilyName', 'Ticket', 'SibSp',
+                   'FamilySize', 'Parch', 'PassengerByBridge', 'TicketHeader',
+                  'CabinLetter', 'Title', 'Embarked', 'TicketNumber', 'Age'], axis = 1)
+    prediction = model.predict(test_x.copy())
+    test['Survived'] = prediction
+    result = pd.concat([train, test], ignore_index=True)
+    result.to_csv('result.csv')
 
     end = time.time()
     print(f'--- Finish! Time:{end-start} ---')
