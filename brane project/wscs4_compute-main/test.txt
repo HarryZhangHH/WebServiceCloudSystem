@@ -1,0 +1,13 @@
+import predict;
+import test;
+print(load_data());
+print(check_load_data());
+print(preprocess());
+print(check_prep());
+print(split());
+print(check_split());
+print(train());
+print(check_train());
+print(evaluate());
+print(predict());
+print(check_predict());

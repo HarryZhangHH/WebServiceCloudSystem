@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+# use nginx ingress
+kind: Ingress
+metadata:
+# define the name of the ingress
+  name: fanout-ingress
+  namespace: default
+  annotations:
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+  # set the path for reserve proxyhh
+      paths:
+      - pathType: Prefix
+        path: "/users"
+        backend:
+	# select the login service
+          service:
+            name: login-service
+            port:
+              number: 5000
+      - pathType: Prefix
+        path: "/"
+        backend:
+	# select the url service
+          service:
+            name: url-service
+            port:
+              number: 5000

@@ -1,0 +1,128 @@
+name: test
+version: 1.0.0
+kind: ecu
+
+files:
+- compare.py
+
+entrypoint:
+  kind: task
+  exec: compare.py
+
+dependencies:
+- python3
+- python3-yaml
+
+actions:
+  check_load_data:
+    command:
+      args:
+      - check_load_data
+    input:
+    output:
+    - name: output
+      type: string
+  check_prep:
+    command:
+      args:
+      - check_prep
+    input:
+    output:
+    - name: output
+      type: string
+  check_split:
+    command:
+      args:
+      - check_split
+    input:
+    output:
+    - name: output
+      type: string
+  check_train:
+    command:
+      args:
+      - check_train
+    input:
+    output:
+    - name: output
+      type: string
+  check_predict:
+    command:
+      args:
+      - check_predict
+    input:
+    output:
+    - name: output
+      type: string
+  check_mutual:
+    command:
+      args:
+      - check_mutual
+    input:
+    output:
+    - name: output
+      type: string
+  check_corr:
+    command:
+      args:
+      - check_corr
+    input:
+    output:
+    - name: output
+      type: string
+  check_Pclass:
+    command:
+      args:
+      - check_Pclass
+    input:
+    output:
+    - name: output
+      type: string
+  check_Bridge:
+    command:
+      args:
+      - check_Bridge
+    input:
+    output:
+    - name: output
+      type: string
+  check_Title:
+    command:
+      args:
+      - check_Title
+    input:
+    output:
+    - name: output
+      type: string    
+  check_age:
+    command:
+      args:
+      - check_age
+    input:
+    output:
+    - name: output
+      type: string
+  check_sex:
+    command:
+      args:
+      - check_sex
+    input:
+    output:
+    - name: output
+      type: string
+  check_fare:
+    command:
+      args:
+      - check_fare
+    input:
+    output:
+    - name: output
+      type: string
+  check_Parch:
+    command:
+      args:
+      - check_Parch
+    input:
+    output:
+    - name: output
+      type: string

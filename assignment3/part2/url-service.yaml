@@ -1,0 +1,17 @@
+apiVersion: v1
+# the service for url-shortener
+kind: Service
+metadata:
+  name: url-service
+spec:
+  type: NodePort
+  # select the url-shortener deployment
+  selector:
+    app: url
+  ports:
+      # port exposed within the cluster
+    - port: 5000
+      # port the service send requests to
+      targetPort: 5000
+      # port exposed externally to the clusters
+      nodePort: 30007
