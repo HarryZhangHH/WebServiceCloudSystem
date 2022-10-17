@@ -1,6 +1,6 @@
 # Implementing Prediction of Survivors in Titanic Disaster on Brane
 
-Brane(https://wiki.enablingpersonalizedinterventions.nl/user-guide/welcome.html), a programmable application orchestration framework, manages and con-
+[Brane](https://wiki.enablingpersonalizedinterventions.nl/user-guide/welcome.html), a programmable application orchestration framework, manages and con-
 trols the utilization of multiple k8s clusters. In this project, we participated in a
 Kaggle competition2 to predict the survivors of Titanic disaster based on the fea-
 tures of passengers through using various classifier. We first implemented EDA
