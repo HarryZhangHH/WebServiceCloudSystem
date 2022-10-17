@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+# create flask1 used for login
+  flask1:
+  # build from the Dockerfile in flask1 folder
+    build: ./flask1
+    # set the name of the container
+    container_name: flask1
+    restart: always
+    # set the app name of container
+    environment: 
+      - APP_NAME=Flask1
+    # select the port to expose
+    expose:
+      - 5002
+    # the mapped address
+    ports:
+     - "5002:5002"
+# create flask2 used for url-shorten
+  flask2:
+  # build from the Dockerfile in flask2 folder
+    build: ./flask2
+    # set the name of the container
+    container_name: flask2
+    restart: always
+    # set the app name of the container
+    environment: 
+       - APP_NAME=Flask2
+    # select the port to expose
+    expose:
+      - 5003
+    # the mapped address
+    ports:
+     - "5003:5003"
+# create nginx used for reverse proxy
+  nginx:
+  # build from the Dockerfile in nginx folder
+    build: ./nginx
+    # set the name of the container
+    container_name: nginx 
+    restart: always
+    # the mapped address
+    ports:
+     - "80:80"
+

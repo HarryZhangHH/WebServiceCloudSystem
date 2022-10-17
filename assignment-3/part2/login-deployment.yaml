@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+# Perform login deployment
+kind: Deployment
+metadata:
+  name: login-deployment
+  # set the name of app
+  labels:
+    app: login
+spec:
+# deploy three replicas
+  replicas: 3
+  selector:
+    matchLabels:
+      app: login
+  template:
+    metadata:
+      labels:
+        app: login
+    spec:
+    # select the containers used to deploy
+      containers:
+      - name: login
+      # select the image we stored in docker hub
+        image: starightedge7/mylogin:v1
+	# select the port to use
+        ports:
+        - containerPort: 5000
