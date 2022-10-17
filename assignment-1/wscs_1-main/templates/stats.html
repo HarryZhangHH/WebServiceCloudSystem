@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} FlaskShortener Statistics {% endblock %}
+  <div class="col-12 col-md-3">
+    <form action="{{ url_for('clear')}}"
+          method="POST">
+      <input type="submit" value="Clear"
+             class="btn btn-danger btn-sm">
+    </form>
+  </div>
+</h1>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Short</th>
+            <th scope="col">Original</th>
+            <th scope="col">Clicks</th>
+            <th scope="col">Creation Date</th>
+	    <th scope="col">Edit</th>
+	    <th scope="col">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for url in urls %}
+                <tr>
+                    <th scope="row">{{ url['id'] }}</th>
+                    <td>{{ url['short_url'] }}</td>
+                    <td>{{ url['original_url'] }}</td>
+                    <td>{{ url['clicks'] }}</td>
+                    <td>{{ url['created'] }}</td>
+		    <td>
+		      <div class="col-12 col-md-3">
+                            <a class="btn btn-warning btn-sm"
+                            href="{{ url_for('edit', id=url['id']) }}">Edit</a>
+                        </div>
+		    </td>
+		    <td>
+		      <div class="col-12 col-md-3">
+                            <form action="{{ url_for('delete', id=url['id']) }}"
+                                method="POST">
+                                <input type="submit" value="Delete"
+                                    class="btn btn-danger btn-sm">
+                            </form>
+                        </div>
+		    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
